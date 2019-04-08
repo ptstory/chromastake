@@ -1,11 +1,15 @@
 <template>
   <div class="container">
-    <h4>Here is the value stored on the blockchain: {{ currentValue }}</h4>
+    <h1>This is the bet page</h1>
+    <b-button @click="startBet">Start Bet</b-button>
+    <br><br>
+    <p v-if="running">Running</p>
+    <!-- <h4>Here is the value stored on the blockchain: {{ currentValue }}</h4>
     <b-form-input v-model="contractValue" placeholder="Enter value"></b-form-input>
     <h4>{{ loading }}</h4>
     <br>
     <b-button @click="setValue">Update</b-button>
-    <br><br>
+    <br><br> -->
     <h4>Balance: {{ formatPrice(ethBalance) }}</h4>
     <h4>Address: {{ ethAddress }}</h4>
     <h4>Vuex store: {{ this.$store.state.bet.value }}</h4>
@@ -16,17 +20,17 @@
 import Web3 from "web3";
 import { mapGetters } from "vuex";
 
-import MyContract from "@/../build/contracts/MyContract.json";
-// import MyContract from "/Users/perrystory/chromastake_js/build/contracts/MyContract.json"
+import Betting from "@/../build/contracts/Betting.json";
 
 export default {
   data() {
     return {
       contractValue: "",
-      contractJson: MyContract,
+      contractJson: Betting,
       currentValue: "",
       isValueUpdated: false,
-      loading: ""
+      loading: "",
+      running: false,
     };
   },
   computed: mapGetters({
@@ -60,7 +64,38 @@ export default {
       web3 = new Web3(web3.currentProvider);
       web3.eth.getAccounts().then(console.log);
     },
-    async setValue() {
+    // async setValue() {
+    //   this.loading = "Transaction request is being processed";
+    //   web3 = new Web3(web3.currentProvider);
+    //   let deployedAddress = await this.getContractAddress();
+    //   let myContract = new web3.eth.Contract(
+    //     this.contractJson.abi,
+    //     deployedAddress
+    //   );
+    //   let setValue = await myContract.methods
+    //     .set(this.contractValue)
+    //     .send({
+    //       from: process.env.VUE_APP_ETHADDRESS
+    //     })
+    //     .then(this.$store.commit("bet/setValue", this.contractValue))
+    //     .catch(error => alert(error.message));
+
+    //   if (setValue) {
+    //     this.loading = "";
+    //     this.isValueUpdated = true;
+    //   }
+    // },
+    async getRunning() {
+      web3 = new Web3(web3.currentProvider);
+      let deployedAddress = await this.getContractAddress();
+      let myContract = new web3.eth.Contract(
+        this.contractJson.abi,
+        deployedAddress
+      );
+      let getRunning = await myContract.methods.getRunning().call();
+      this.running = getRunning;
+    },
+        async startBet() {
       this.loading = "Transaction request is being processed";
       web3 = new Web3(web3.currentProvider);
       let deployedAddress = await this.getContractAddress();
@@ -68,28 +103,19 @@ export default {
         this.contractJson.abi,
         deployedAddress
       );
-      let setValue = await myContract.methods
-        .set(this.contractValue)
+      let startBet = await myContract.methods
+        .startBet(100)
         .send({
           from: process.env.VUE_APP_ETHADDRESS
         })
-        .then(this.$store.commit("bet/setValue", this.contractValue))
+        // .then(this.$store.commit("bet/setValue", this.contractValue))
+        // .then(this.running = this.getRunning())
         .catch(error => alert(error.message));
 
       if (setValue) {
         this.loading = "";
         this.isValueUpdated = true;
       }
-    },
-    async getCurrentValue() {
-      web3 = new Web3(web3.currentProvider);
-      let deployedAddress = await this.getContractAddress();
-      let myContract = new web3.eth.Contract(
-        this.contractJson.abi,
-        deployedAddress
-      );
-      let getValue = await myContract.methods.get().call();
-      this.currentValue = getValue;
     },
     formatPrice(value) {
       return value && value !== 0
@@ -114,8 +140,10 @@ export default {
       }, 100);
     });
     this.initWeb3();
-    this.getCurrentValue();
+    // this.getCurrentValue();
     this.getAccount()
+    this.getRunning()
+
   }
 };
 </script>
