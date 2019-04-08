@@ -1,5 +1,6 @@
 const state = {
-  value: ""
+  value: "",
+  color: ""
 };
 
 const getters = {
@@ -19,6 +20,9 @@ const getters = {
 const mutations = {
   setValue(state, value) {
     state.value = value;
+  },
+  setColor(state, color) {
+    state.color = color;
   }
 };
 
