@@ -2,17 +2,19 @@
   <div class="container">
     <h1>This is the bet page</h1>
     <b-button @click="startBet">Start Bet</b-button>
-    <br><br>
-    <p v-if="running">Running</p>
-    <!-- <h4>Here is the value stored on the blockchain: {{ currentValue }}</h4>
-    <b-form-input v-model="contractValue" placeholder="Enter value"></b-form-input>
-    <h4>{{ loading }}</h4>
     <br>
-    <b-button @click="setValue">Update</b-button>
-    <br><br> -->
+    <br>
+    <p v-if="running">Running</p>
+    <br>
+    <br>
+    <b-form-input v-model="colorSelected" placeholder="Enter color to bet on"></b-form-input>
+    <b-form-input v-model="betValue" placeholder="Enter amount to bet"></b-form-input>
+    <b-button @click="makeBet">Make Bet</b-button>
+    <br>
+    <br>
     <h4>Balance: {{ formatPrice(ethBalance) }}</h4>
     <h4>Address: {{ ethAddress }}</h4>
-    <h4>Vuex store: {{ this.$store.state.bet.value }}</h4>
+    <h4>Vuex store: {{ this.$store.state.bet.color }}</h4>
   </div>
 </template>
 
@@ -25,33 +27,34 @@ import Betting from "@/../build/contracts/Betting.json";
 export default {
   data() {
     return {
-      contractValue: "",
+      colorSelected: "",
+      betValue: 0,
       contractJson: Betting,
       currentValue: "",
       isValueUpdated: false,
       loading: "",
-      running: false,
+      running: false
     };
   },
   computed: mapGetters({
     web3Instance: "getWeb3Instance",
     ethBalance: "getEthBalance",
-    ethAddress: 'getEthAddress'
+    ethAddress: "getEthAddress"
   }),
-    betValue() {
-        return this.$store.state.bet.value
-    },
+  betValue() {
+    return this.$store.state.bet.value;
+  },
   methods: {
     initWeb3: () => {
-    if (window.ethereum) {
-		window.web3 = new Web3(ethereum);
+      if (window.ethereum) {
+        window.web3 = new Web3(ethereum);
         try {
           ethereum.enable();
         } catch (err) {
-          alert('user denied access to metamask')
+          alert("user denied access to metamask");
         }
-      } 
-  },
+      }
+    },
 
     async getContractAddress() {
       web3 = new Web3(web3.currentProvider);
@@ -64,27 +67,22 @@ export default {
       web3 = new Web3(web3.currentProvider);
       web3.eth.getAccounts().then(console.log);
     },
-    // async setValue() {
-    //   this.loading = "Transaction request is being processed";
-    //   web3 = new Web3(web3.currentProvider);
-    //   let deployedAddress = await this.getContractAddress();
-    //   let myContract = new web3.eth.Contract(
-    //     this.contractJson.abi,
-    //     deployedAddress
-    //   );
-    //   let setValue = await myContract.methods
-    //     .set(this.contractValue)
-    //     .send({
-    //       from: process.env.VUE_APP_ETHADDRESS
-    //     })
-    //     .then(this.$store.commit("bet/setValue", this.contractValue))
-    //     .catch(error => alert(error.message));
-
-    //   if (setValue) {
-    //     this.loading = "";
-    //     this.isValueUpdated = true;
-    //   }
-    // },
+    async makeBet() {
+      web3 = new Web3(web3.currentProvider);
+      let deployedAddress = await this.getContractAddress();
+      let myContract = new web3.eth.Contract(
+        this.contractJson.abi,
+        deployedAddress
+      );
+      let makeBet = await myContract.methods
+        .makeBet(this.colorSelected)
+        .send({
+          value: this.toEther(this.betValue),
+          from: process.env.VUE_APP_ETHADDRESS
+        })
+        .then(this.$store.commit("bet/setColor", this.colorSelected))
+        .catch(error => alert(error.message));
+    },
     async getRunning() {
       web3 = new Web3(web3.currentProvider);
       let deployedAddress = await this.getContractAddress();
@@ -95,7 +93,7 @@ export default {
       let getRunning = await myContract.methods.getRunning().call();
       this.running = getRunning;
     },
-        async startBet() {
+    async startBet() {
       this.loading = "Transaction request is being processed";
       web3 = new Web3(web3.currentProvider);
       let deployedAddress = await this.getContractAddress();
@@ -121,6 +119,9 @@ export default {
       return value && value !== 0
         ? web3Instance.utils.fromWei(value, "ether") + " ether"
         : "-";
+    },
+    toEther(value) {
+      return value * 1000000000000000000;
     }
   },
   watch: {
@@ -141,9 +142,8 @@ export default {
     });
     this.initWeb3();
     // this.getCurrentValue();
-    this.getAccount()
-    this.getRunning()
-
+    this.getAccount();
+    this.getRunning();
   }
 };
 </script>
