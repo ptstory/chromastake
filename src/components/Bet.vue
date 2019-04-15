@@ -12,8 +12,10 @@
     <b-button @click="makeBet">Make Bet</b-button>
     <br>
     <br>
+    <b-button @click="getEndTime">Get End Time</b-button>
     <h4>Balance: {{ formatPrice(ethBalance) }}</h4>
     <h4>Address: {{ ethAddress }}</h4>
+    <h4>Pool amount: {{ this.poolAmount }}</h4>
     <h4>Vuex store: {{ this.$store.state.bet.color }}</h4>
   </div>
 </template>
@@ -29,6 +31,7 @@ export default {
     return {
       colorSelected: "",
       betValue: 0,
+      poolAmount: 0,
       contractJson: Betting,
       currentValue: "",
       isValueUpdated: false,
@@ -83,15 +86,38 @@ export default {
         .then(this.$store.commit("bet/setColor", this.colorSelected))
         .catch(error => alert(error.message));
     },
-    async getRunning() {
+    async getIsRunning() {
       web3 = new Web3(web3.currentProvider);
       let deployedAddress = await this.getContractAddress();
       let myContract = new web3.eth.Contract(
         this.contractJson.abi,
         deployedAddress
       );
-      let getRunning = await myContract.methods.getRunning().call();
-      this.running = getRunning;
+      let getIsRunning = await myContract.methods.getIsRunning().call();
+      this.running = getIsRunning;
+    },
+    async getEndTime() {
+      web3 = new Web3(web3.currentProvider);
+      let deployedAddress = await this.getContractAddress();
+      let myContract = new web3.eth.Contract(
+        this.contractJson.abi,
+        deployedAddress
+      );
+      let getEndTime = await myContract.methods.getEndTime().call();
+      this.endTime = getEndTime;
+      let d = new Date(0);
+      d.setUTCSeconds(this.endTime);
+      alert();
+    },
+    async getPoolAmount() {
+      web3 = new Web3(web3.currentProvider);
+      let deployedAddress = await this.getContractAddress();
+      let myContract = new web3.eth.Contract(
+        this.contractJson.abi,
+        deployedAddress
+      );
+      let getPoolAmount = await myContract.methods.getPoolAmount().call();
+      this.poolAmount = getPoolAmount;
     },
     async startBet() {
       this.loading = "Transaction request is being processed";
@@ -143,7 +169,8 @@ export default {
     this.initWeb3();
     // this.getCurrentValue();
     this.getAccount();
-    this.getRunning();
+    this.getIsRunning();
+    this.getPoolAmount();
   }
 };
 </script>

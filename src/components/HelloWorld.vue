@@ -16,7 +16,7 @@
 import Web3 from "web3";
 import { mapGetters } from "vuex";
 
-import MyContract from "@/../build/contracts/MyContract.json";
+// import MyContract from "@/../build/contracts/MyContract.json";
 // import MyContract from "/Users/perrystory/chromastake_js/build/contracts/MyContract.json"
 
 export default {
