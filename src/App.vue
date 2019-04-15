@@ -2,8 +2,7 @@
   <div id="app">
     <div id="nav">
       <b-navbar toggleable="lg" type="dark" class="nav-background">
-        <img src ="./assets/chromostake_logo.png" height="25" width="30" class="project_logo">
-        <b-navbar-brand href="">Chromastake</b-navbar-brand>
+        <b-navbar-brand href=""><img src ="./assets/chromostake_logo.png" height="25" width="30" class="project_logo">Chromastake</b-navbar-brand>
 
         <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -51,16 +50,4 @@ font-weight: bold;
   color:rgb(78, 184, 131)!important;
 }
 
-
-
-// #nav {
-//   padding: 30px;
-//   a {
-//     font-weight: bold;
-//     color: #2c3e50;
-//     &.router-link-exact-active {
-//       color: #42b983;
-//     }
-//   }
-// }
 </style>
