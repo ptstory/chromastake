@@ -15,7 +15,7 @@
     <b-button @click="getEndTime">Get End Time</b-button>
     <h4>Balance: {{ formatPrice(ethBalance) }}</h4>
     <h4>Address: {{ ethAddress }}</h4>
-    <h4>Pool amount: {{ this.poolAmount }}</h4>
+    <h4>Pool amount: {{ this.fromEther(this.poolAmount) }}</h4>
     <h4>Vuex store: {{ this.$store.state.bet.color }}</h4>
   </div>
 </template>
@@ -107,7 +107,8 @@ export default {
       this.endTime = getEndTime;
       let d = new Date(0);
       d.setUTCSeconds(this.endTime);
-      alert();
+      alert("Time remaining: " + d - Date.now())
+      alert(Date.now() >= d);
     },
     async getPoolAmount() {
       web3 = new Web3(web3.currentProvider);
@@ -148,6 +149,9 @@ export default {
     },
     toEther(value) {
       return value * 1000000000000000000;
+    },
+    fromEther(value) {
+      return value / 1000000000000000000;
     }
   },
   watch: {
