@@ -1,10 +1,11 @@
 <template>
   <div class="container">
     <h1>This is the bet page</h1>
-    <b-button @click="startBet">Start Bet</b-button>
+    <b-button @click="startBet()">Start Bet</b-button>
     <br>
+    <b-button @click="endBet()">End Bet</b-button>
     <br>
-    <p v-if="running">Running</p>
+    <p v-if="this.$store.state.bet.isRunning">Running</p>
     <br>
     <br>
     <b-form-input v-model="colorSelected" placeholder="Enter color to bet on"></b-form-input>
@@ -16,7 +17,12 @@
     <h4>Balance: {{ formatPrice(ethBalance) }}</h4>
     <h4>Address: {{ ethAddress }}</h4>
     <h4>Pool amount: {{ this.fromEther(this.poolAmount) }}</h4>
-    <h4>Vuex store: {{ this.$store.state.bet.color }}</h4>
+    <h4>Bet value: {{ this.$store.state.bet.color }}</h4>
+    <countdown v-if="timeLeft >= 0" :time="timeLeft">
+      <template
+        slot-scope="props"
+      >Time Remaining：{{ props.days }} days, {{ props.hours }} hours, {{ props.minutes }} minutes, {{ props.seconds }} seconds.</template>
+    </countdown>
   </div>
 </template>
 
@@ -33,19 +39,23 @@ export default {
       betValue: 0,
       poolAmount: 0,
       contractJson: Betting,
-      currentValue: "",
-      isValueUpdated: false,
-      loading: "",
-      running: false
+      running: this.$store.state.bet.isRunning
     };
   },
   computed: mapGetters({
     web3Instance: "getWeb3Instance",
     ethBalance: "getEthBalance",
-    ethAddress: "getEthAddress"
+    ethAddress: "getEthAddress",
+    timeLeft: "bet/getTimeLeft"
   }),
   betValue() {
     return this.$store.state.bet.value;
+  },
+  timeLeft() {
+    return this.$store.state.bet.timeLeft;
+  },
+  isRunning() {
+    return this.$store.state.bet.isRunning;
   },
   methods: {
     initWeb3: () => {
@@ -83,7 +93,9 @@ export default {
           value: this.toEther(this.betValue),
           from: process.env.VUE_APP_ETHADDRESS
         })
-        .then(this.$store.commit("bet/setColor", this.colorSelected))
+        .once("receipt", function(receipt) {})
+        // .on('confirmation', function(confNumber, receipt){ confNumber => this.$store.commit("bet/setColor", this.colorSelected) })
+        // .then(this.$store.commit("bet/setColor", this.colorSelected))
         .catch(error => alert(error.message));
     },
     async getIsRunning() {
@@ -94,7 +106,9 @@ export default {
         deployedAddress
       );
       let getIsRunning = await myContract.methods.getIsRunning().call();
-      this.running = getIsRunning;
+      // this.running = getIsRunning;
+      this.$store.commit("bet/setIsRunning", getIsRunning);
+      // console.log("Is running? " + this.running)
     },
     async getEndTime() {
       web3 = new Web3(web3.currentProvider);
@@ -107,8 +121,8 @@ export default {
       this.endTime = getEndTime;
       let d = new Date(0);
       d.setUTCSeconds(this.endTime);
-      alert("Time remaining: " + d - Date.now())
-      alert(Date.now() >= d);
+      this.d = d;
+      this.$store.commit("bet/setTimeLeft", d - Date.now());
     },
     async getPoolAmount() {
       web3 = new Web3(web3.currentProvider);
@@ -121,7 +135,6 @@ export default {
       this.poolAmount = getPoolAmount;
     },
     async startBet() {
-      this.loading = "Transaction request is being processed";
       web3 = new Web3(web3.currentProvider);
       let deployedAddress = await this.getContractAddress();
       let myContract = new web3.eth.Contract(
@@ -129,18 +142,31 @@ export default {
         deployedAddress
       );
       let startBet = await myContract.methods
-        .startBet(100)
+        .startBet(30)
+        .send({
+          from: process.env.VUE_APP_ETHADDRESS
+        })
+        .once("transactionHash", function(hash) {})
+        .once("receipt", function(receipt) {})
+        // .on('confirmation', function(confNumber, receipt){ this.$store.commit("bet/setIsRunning", true) })
+        // .on('confirmation', function(confNumber, receipt){ receipt => this.getEndTime() })
+        .catch(error => alert(error.message));
+    },
+    async endBet() {
+      web3 = new Web3(web3.currentProvider);
+      let deployedAddress = await this.getContractAddress();
+      let myContract = new web3.eth.Contract(
+        this.contractJson.abi,
+        deployedAddress
+      );
+      let endBet = await myContract.methods
+        .endBet()
         .send({
           from: process.env.VUE_APP_ETHADDRESS
         })
         // .then(this.$store.commit("bet/setValue", this.contractValue))
         // .then(this.running = this.getRunning())
         .catch(error => alert(error.message));
-
-      if (setValue) {
-        this.loading = "";
-        this.isValueUpdated = true;
-      }
     },
     formatPrice(value) {
       return value && value !== 0
@@ -155,14 +181,22 @@ export default {
     }
   },
   watch: {
-    // isValueUpdated: function(newValue, oldValue) {
-    //   if (newValue == true) {
-    //     window.location.reload(true);
-    //   }
-    // }
-    // betValue() {
-    //   alert("value changed");
-    // }
+    timeLeft(time) {
+      if (time <= 0 && this.$store.state.bet.isRunning) {
+        this.$store.commit("bet/setIsRunning", false);
+        this.endBet();
+      }
+    }
+  },
+  mounted: function() {
+    this.$nextTick(function() {
+      window.setInterval(() => {
+        this.getIsRunning();
+      }, 4000);
+      window.setInterval(() => {
+        this.getEndTime();
+      }, 1000);
+    });
   },
   created: function() {
     window.addEventListener("load", () => {
@@ -171,9 +205,7 @@ export default {
       }, 100);
     });
     this.initWeb3();
-    // this.getCurrentValue();
     this.getAccount();
-    this.getIsRunning();
     this.getPoolAmount();
   }
 };
