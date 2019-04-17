@@ -39,7 +39,6 @@ export default {
       betValue: 0,
       poolAmount: 0,
       contractJson: Betting,
-      running: this.$store.state.bet.isRunning
     };
   },
   computed: mapGetters({
@@ -195,6 +194,7 @@ export default {
       }, 4000);
       window.setInterval(() => {
         this.getEndTime();
+        this.getPoolAmount();
       }, 1000);
     });
   },
