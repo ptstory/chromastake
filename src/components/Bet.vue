@@ -1,19 +1,37 @@
 <template>
-  <!-- <b-container class="">
-    <b-row class="">
-      <b-col>Please choose a color:
-      <swatches v-model="color" :colors="colors" row-length="5"></swatches>
-      </b-col>
-    </b-row>
-  </b-container> -->
 
-  <b-container fluid  v-if ="running" class ="running_page">
-    <b-container class ="spinner">
+  <b-container  v-if ="running" class ="running_page">
 
+    <b-container class="info">
+      <b-row>
+        <b-col cols ="6" class="account"><span style="font-weight:bold;">Account: </span>{{ethAddress }}</b-col>
+        <!--Vuex store: {{ this.$store.state.bet.color }}-->
+        <b-col cols="2"></b-col>
+        <b-col cols ="4">
+          <span v-model="betValue" placeholder="Pool Amount"> <span class ="pool">Pool Amount: </span> {{betValue}} </span>
+          </span>
+        </b-col>
+      </b-row>
+
+      <b-row>
+        <b-col cols ="6"><span style="font-weight:bold;">Balance: </span>{{ formatPrice(ethBalance) }}</b-col>
+        <b-col cols ="2"></b-col>
+        <b-col cols ="4"></b-col>
+      </b-row>
     </b-container>
+
+    <!--Spinner Animation  -->
+    <Spinner/>
+
     <b-container class = "input_container">
       <b-row>
-        <b-col><span style="color:black;font-weight:bold;">Place Bet</span><b-form-input v-model="colorSelected" placeholder="$$$$$$"></b-form-input></b-col>
+        <b-col cols ="4">
+        </b-col>
+        <b-col cols="4">
+          <span style="color:black;font-weight:bold;">Place Bet</span><b-form-input v-model="colorSelected" placeholder="$$$$$$"></b-form-input>
+        </b-col>
+        <b-col cols ="4">
+        </b-col>
       </b-row>
       <b-row>
         <b-col style ="padding-bottom:20px;">
@@ -24,20 +42,6 @@
       </b-row>
       <b-row>
         <b-col><b-button @click="makeBet">Make Bet</b-button></b-col>
-      </b-row>
-    </b-container>
-
-
-
-    <b-container class="footer">
-      <b-row>
-        <b-col><span style="color:black;font-weight:bold;">Pool Amount</span><b-form-input v-model="betValue" placeholder="Pool Amount"></b-form-input></b-col>
-      </b-row>
-      <b-row>
-        <b-col>Balance: {{ formatPrice(ethBalance) }}</b-col>
-      </b-row>
-      <b-row>
-        <b-col>Address: {{ ethAddress }}<br>Vuex store: {{ this.$store.state.bet.color }}</b-col>
       </b-row>
     </b-container>
   </b-container>
@@ -60,11 +64,20 @@
   padding-bottom:56px;
 }
 .running_page{
-  width:100vw;
-  height:94vh;
+  margin-top:20px;
+  height:100%;
+
+  /* width:100vw;
+  height:94vh; */
+  
   /* background-color:#37775c; */
 
 }
+/* @media (max-width: 425px){
+  .running_page{
+    margin-top:40%;
+}
+} */
 .spinner{
   background-color:red;
   width:300px;
@@ -73,13 +86,21 @@
 }
 .input_container{
   padding:35px;
-  width: 35%;
+  /* width: 35%; */
   /* background-color:#37775c; */
 }
 
-.footer{
+.info{
   overflow:hidden;
-  width:35%;
+  margin-bottom:10px;
+  /* width:35%; */
+}
+.account{
+  overflow: hidden;
+}
+.pool{
+  text-align:right;
+  font-weight:bold;
 }
 
 
@@ -88,14 +109,19 @@
 <script>
 import Web3 from "web3";
 import { mapGetters } from "vuex";
-import Swatches from 'vue-swatches'
+import Swatches from 'vue-swatches';
+import Spinner from '@/components/Spinner';
 
 
 import Betting from "@/../build/contracts/Betting.json";
 import "vue-swatches/dist/vue-swatches.min.css";
 
 export default {
-  components: { Swatches },
+  components: {
+    Swatches,
+    Spinner
+
+   },
   data() {
     return {
       color: '',
