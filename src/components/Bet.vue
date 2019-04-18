@@ -6,35 +6,40 @@
       </b-col>
     </b-row>
   </b-container> -->
-  <b-container fluid v-if="running" class ="running_page">
+
+  <b-container fluid  v-if ="running" class ="running_page">
+    <b-container class ="spinner">
+
+    </b-container>
     <b-container class = "input_container">
       <b-row>
         <b-col><span style="color:black;font-weight:bold;">Place Bet</span><b-form-input v-model="colorSelected" placeholder="$$$$$$"></b-form-input></b-col>
-        <b-col><span style="color:black;font-weight:bold;">Select color:</span>
-        <swatches v-model="color" :colors="colors" row-length="5"></swatches></b-col>
-        <b-col><span style="color:black;font-weight:bold;">Pool Amount</span><b-form-input v-model="betValue" placeholder="Pool Amount"></b-form-input></b-col>
       </b-row>
-      <span>{{color}}</span>
-    </b-container>
-    <b-container class ="animation_container">
-    </b-container>
-    <!-- <b-container class="loader"> -->
-    <b-container class="footer">
       <b-row>
-        <b-col>Balance: {{ formatPrice(ethBalance) }}</b-col>
+        <b-col style ="padding-bottom:20px;">
+          <span style="color:black;font-weight:bold;">Select color:</span>
+          <swatches v-model="color" :colors="colors" row-length="5"></swatches>
+          <span>{{color}}</span>
+        </b-col>
+      </b-row>
+      <b-row>
         <b-col><b-button @click="makeBet">Make Bet</b-button></b-col>
-        <b-col>Address: {{ ethAddress }}<br>Vuex store: {{ this.$store.state.bet.color }}</b-col>
       </b-row>
     </b-container>
 
-    <!-- </b-container> -->
-    <!-- <b-container class="footer_container">
-      <b-row align-v="end">
-        <b-col>Balance: {{ formatPrice(ethBalance) }}</b-col>
-        <b-col>Address: {{ ethAddress }}</h4></b-col>
-        <b-col>Vuex store: {{ this.$store.state.bet.color }}</b-col>
+
+
+    <b-container class="footer">
+      <b-row>
+        <b-col><span style="color:black;font-weight:bold;">Pool Amount</span><b-form-input v-model="betValue" placeholder="Pool Amount"></b-form-input></b-col>
       </b-row>
-    </b-container>-->
+      <b-row>
+        <b-col>Balance: {{ formatPrice(ethBalance) }}</b-col>
+      </b-row>
+      <b-row>
+        <b-col>Address: {{ ethAddress }}<br>Vuex store: {{ this.$store.state.bet.color }}</b-col>
+      </b-row>
+    </b-container>
   </b-container>
 
   <b-container fluid v-else>
@@ -44,34 +49,6 @@
       <b-col></b-col>
     </b-row>
   </b-container>
-
-
-    <!-- <br>
-    <br>
-    <p v-if="running">Running</p>
-    <br>
-    <br> -->
-
-
-    <!-- <b-button @click="makeBet">Make Bet</b-button>
-    <br>
-    <br>
-    <h4>Balance: {{ formatPrice(ethBalance) }}</h4>
-    <h4>Address: {{ ethAddress }}</h4>
-    <h4>Vuex store: {{ this.$store.state.bet.color }}</h4> -->
-  <!-- </b-container>
-  <b-container fluid v-else >
-    <b-row class ="button_page" align-v="center">
-      <b-col></b-col>
-      <b-col><b-button size="lg" variant="dark" @click="startBet">Play!</b-button></b-col>
-      <b-col></b-col>
-    </b-row>
-  </b-container> -->
-
-    <!-- <h1>This is the bet page</h1>
-    <b-button @click="startBet">Start Bet</b-button> -->
-
-
 
 
 </template>
@@ -88,75 +65,21 @@
   /* background-color:#37775c; */
 
 }
+.spinner{
+  background-color:red;
+  width:300px;
+  height:300px;
+
+}
 .input_container{
   padding:35px;
+  width: 35%;
   /* background-color:#37775c; */
 }
-.animation_container{
-  height:66%;
-
-}
-/* LOADER */
-.loader,.loader:before,.loader:after{
-    top:0;
-    bottom:0;
-    left:0;
-    right:0;
-    content:"";
-    position:absolute;
-    border-radius:50%;
-  }
-
-  .loader{
-    position:fixed;
-    width:100px;
-    height:100px;
-    margin:auto;
-    animation:spin 4s linear infinite;
-  }
-
-  @keyframes spin{
-    100%{transform:rotate(360deg);filter:hue-rotate(360deg)}
-  }
-
-  .loader:before{
-    border:5px solid #aaa;
-    border-bottom:5px solid orange;
-    border-left:5px solid orange;
-    animation:spin1 1s linear infinite;
-  }
-
-  .loader:after{
-    border:5px solid #aaa;
-    border-top:5px solid transparent;
-    border-right:5px solid transparent;
-    animation:spin2 1s linear infinite;
-  }
-
-  @keyframes spin1{
-    20%{transform:rotate(90deg)}
-    40%{transform:rotate(90deg)}
-    80%{transform:rotate(90deg)}
-    100%{transform:rotate(90deg)}
-  }
-  @keyframes spin2{
-    0%{transform:rotate(-30deg)}
-    20%{transform:rotate(-30deg);
-        border-color:transparent transparent #aaa #aaa}
-    21%{border-color:orange orange transparent transparent}
-    40%{transform:rotate(-30deg)}
-    60%{transform:rotate(120deg);
-        border-color:orange orange transparent transparent}
-    61%{border-color:transparent transparent #aaa #aaa}
-    80%{transform:rotate(270deg)}
-    100%{transform:rotate(330deg);}
-  }
-/*LOADER  */
 
 .footer{
   overflow:hidden;
-
-
+  width:35%;
 }
 
 
