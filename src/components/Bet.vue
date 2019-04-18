@@ -1,32 +1,133 @@
 <template>
-  <div class="container">
-    <h1>This is the bet page</h1>
-    <b-button @click="startBet">Start Bet</b-button>
-    <br>
-    <br>
-    <p v-if="running">Running</p>
-    <br>
-    <br>
-    <b-form-input v-model="colorSelected" placeholder="Enter color to bet on"></b-form-input>
-    <b-form-input v-model="betValue" placeholder="Enter amount to bet"></b-form-input>
-    <b-button @click="makeBet">Make Bet</b-button>
-    <br>
-    <br>
-    <h4>Balance: {{ formatPrice(ethBalance) }}</h4>
-    <h4>Address: {{ ethAddress }}</h4>
-    <h4>Vuex store: {{ this.$store.state.bet.color }}</h4>
-  </div>
+
+  <b-container  v-if ="running" class ="running_page">
+
+    <b-container class="info">
+      <b-row>
+        <b-col cols ="6" class="account"><span style="font-weight:bold;">Account: </span>{{ethAddress }}</b-col>
+        <!--Vuex store: {{ this.$store.state.bet.color }}-->
+        <b-col cols="2"></b-col>
+        <b-col cols ="4">
+          <span v-model="betValue" placeholder="Pool Amount"> <span class ="pool">Pool Amount: </span> {{betValue}} </span>
+          </span>
+        </b-col>
+      </b-row>
+
+      <b-row>
+        <b-col cols ="6"><span style="font-weight:bold;">Balance: </span>{{ formatPrice(ethBalance) }}</b-col>
+        <b-col cols ="2"></b-col>
+        <b-col cols ="4"></b-col>
+      </b-row>
+    </b-container>
+
+    <!--Spinner Animation  -->
+    <Spinner/>
+
+    <b-container class = "input_container">
+      <b-row>
+        <b-col cols ="4">
+        </b-col>
+        <b-col cols="4">
+          <span style="color:black;font-weight:bold;">Place Bet</span><b-form-input v-model="colorSelected" placeholder="$$$$$$"></b-form-input>
+        </b-col>
+        <b-col cols ="4">
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col style ="padding-bottom:20px;">
+          <span style="color:black;font-weight:bold;">Select color:</span>
+          <swatches v-model="color" :colors="colors" row-length="5"></swatches>
+          <span>{{color}}</span>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col><b-button @click="makeBet">Make Bet</b-button></b-col>
+      </b-row>
+    </b-container>
+  </b-container>
+
+  <b-container fluid v-else>
+    <b-row class ="button_page" align-v="center">
+      <b-col></b-col>
+      <b-col><b-button size="lg" variant="dark" @click="startBet">Play!</b-button></b-col>
+      <b-col></b-col>
+    </b-row>
+  </b-container>
+
+
 </template>
+<style scoped>
+.button_page{
+  width:100vw;
+  height:94vh;
+  background-color:#37775c;
+  padding-bottom:56px;
+}
+.running_page{
+  margin-top:20px;
+  height:100%;
+
+  /* width:100vw;
+  height:94vh; */
+  
+  /* background-color:#37775c; */
+
+}
+/* @media (max-width: 425px){
+  .running_page{
+    margin-top:40%;
+}
+} */
+.spinner{
+  background-color:red;
+  width:300px;
+  height:300px;
+
+}
+.input_container{
+  padding:35px;
+  /* width: 35%; */
+  /* background-color:#37775c; */
+}
+
+.info{
+  overflow:hidden;
+  margin-bottom:10px;
+  /* width:35%; */
+}
+.account{
+  overflow: hidden;
+}
+.pool{
+  text-align:right;
+  font-weight:bold;
+}
+
+
+</style>
 
 <script>
 import Web3 from "web3";
 import { mapGetters } from "vuex";
+import Swatches from 'vue-swatches';
+import Spinner from '@/components/Spinner';
+
 
 import Betting from "@/../build/contracts/Betting.json";
+import "vue-swatches/dist/vue-swatches.min.css";
 
 export default {
+  components: {
+    Swatches,
+    Spinner
+
+   },
   data() {
     return {
+      color: '',
+      colors: [
+        ['#f7931e', '#2e3192', '#22b573', '#c1272d', '#662d91', '#56c6d0' ],
+      ],
       colorSelected: "",
       betValue: 0,
       contractJson: Betting,
@@ -147,5 +248,3 @@ export default {
   }
 };
 </script>
-
-<style scoped lang="scss"></style>

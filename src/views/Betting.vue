@@ -1,7 +1,7 @@
 <template>
-  <div class="betting">
+
     <Bet />
-  </div>
+
 </template>
 
 <script>
