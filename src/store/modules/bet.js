@@ -1,11 +1,16 @@
 const state = {
   value: "",
-  color: ""
+  color: "",
+  isRunning: false,
+  timeLeft: 0
 };
 
 const getters = {
   state: state => {
     return state;
+  },
+  getTimeLeft: state => {
+    return state.timeLeft;
   }
 };
 
@@ -23,6 +28,12 @@ const mutations = {
   },
   setColor(state, color) {
     state.color = color;
+  },
+  setTimeLeft(state, timeLeft) {
+    state.timeLeft = timeLeft;
+  },
+  setIsRunning(state, isRunning) {
+    state.isRunning = isRunning;
   }
 };
 
