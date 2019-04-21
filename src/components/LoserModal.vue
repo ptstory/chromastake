@@ -52,5 +52,8 @@ h5.modal-title{
 .money{
   color:green;
 }
+.rotating{
+  animation-play-state: paused;
+}
 
 </style>
