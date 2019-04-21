@@ -7,7 +7,8 @@
         <b-col cols ="6" class="account"><span style="font-weight:bold;">Account: </span>{{ ethAddress }}</b-col>
         <b-col cols="2"></b-col>
         <b-col cols ="4">
-          <span placeholder="Pool Amount"> <span class ="pool">Pool Amount: </span> {{ fromEther(poolAmount) }} </span>
+          <span> <span class ="pool">Pool Amount: </span> {{ fromEther(poolAmount) }} </span>
+          <span> <span class ="pool">Winning Color </span> {{ winningColor }} </span>
         </b-col>
       </b-row>
 
@@ -42,6 +43,9 @@
           <span style="color:black;font-weight:bold;">Select color:</span>
           <swatches v-model="colorSelected" :colors="colors" row-length="5"></swatches>
           <span>{{ toColorName(colorSelected) }}</span>
+          <br>
+          <span v-if="isWinner">YOU ROCK</span>
+          <span v-if="isLoser">YOU SUCK</span>
           <br>
           <span>{{ this.selectedColors }}</span>
         </b-col>
@@ -126,7 +130,10 @@ export default {
       colorSelected: '',
       betValue: 0,
       poolAmount: 0,
+      winningColor: '',
       hasPlayed: false,
+      isWinner: false,
+      isLoser: false,
       contractJson: Betting,
     };
   },
@@ -184,7 +191,7 @@ export default {
           value: this.toEther(this.betValue),
           from: process.env.VUE_APP_ETHADDRESS
         })
-        .once("transactionHash", (hash) => { this.$store.commit("bet/addSelectedColor", this.colorSelected) }) // wait for the transaction hash (confirmation) before adding selected color to user's state
+        .once("transactionHash", (hash) => { this.$store.commit("bet/addSelectedColor", this.toEnum(this.colorSelected)) }) // wait for the transaction hash (confirmation) before adding selected color to user's state
         .catch(error => alert(error.message))
     },
     async getIsRunning() {
@@ -221,6 +228,16 @@ export default {
       let getPoolAmount = await myContract.methods.getPoolAmount().call();
       this.poolAmount = getPoolAmount;
     },
+    async getWinningColor() {
+      web3 = new Web3(web3.currentProvider);
+      let deployedAddress = await this.getContractAddress();
+      let myContract = new web3.eth.Contract(
+        this.contractJson.abi,
+        deployedAddress
+      );
+      let getWinningColor = await myContract.methods.getWinningColor().call();
+      this.winningColor = getWinningColor;
+    },
     async startBet() {
       web3 = new Web3(web3.currentProvider);
       let deployedAddress = await this.getContractAddress();
@@ -247,12 +264,15 @@ export default {
         .send({
           from: process.env.VUE_APP_ETHADDRESS
         })
-        .catch(error => alert(error.message));
+      .then(this.announceWinner())
     },
     formatPrice(value) {
       return value && value !== 0
         ? web3Instance.utils.fromWei(value, "ether") + " ether"
         : "-";
+    },
+    announceWinner(){
+      this.$store.state.bet.selectedColors.includes(Number(this.winningColor)) ? this.isWinner = true : this.isLoser = true
     },
     toEther(value) {
       return value * 1000000000000000000;
@@ -285,6 +305,7 @@ export default {
       window.setInterval(() => {
         this.getEndTime();
         this.getPoolAmount();
+        this.getWinningColor();
       }, 1000);
     });
   },
@@ -297,6 +318,7 @@ export default {
     this.initWeb3();
     this.getAccount();
     this.getPoolAmount();
+    this.getWinningColor();
   }
 };
 </script>
