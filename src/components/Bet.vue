@@ -15,10 +15,11 @@
       <b-row>
         <b-col cols ="6"><span style="font-weight:bold;">Balance: </span>{{ formatPrice(ethBalance) }}</b-col>
         <b-col cols ="2"></b-col>
+        <!--Timer  -->
         <b-col cols ="4">
           <countdown v-if="timeLeft >= 0" :time="timeLeft">
-      <template slot-scope="props">
-        Time Remaining: {{ props.minutes }} minutes, {{ props.seconds }} seconds.
+      <template slot-scope="props" >
+        <span class ="timer"> {{ props.minutes }} minutes, {{ props.seconds }} seconds.</span>
         </template>
     </countdown>
     </b-col>
@@ -52,6 +53,7 @@
         <b-col><b-button @click="makeBet">Make Bet</b-button></b-col>
       </b-row>
     </b-container>
+    <!-- Winner & Losers Modal -->
     <WinnerModal v-if="isWinner" />
     <LoserModal v-if="isLoser" />
   </b-container>
@@ -63,14 +65,9 @@
       <b-col></b-col>
     </b-row>
   </b-container>
-
-  <!-- Winner & Losers Modal -->
-
-
-
-
-
 </template>
+
+
 <style scoped>
 .button_page{
   width:100vw;
@@ -106,6 +103,11 @@
 .pool{
   text-align:right;
   font-weight:bold;
+}
+.timer{
+  color:red;
+  font-size: x-large;
+  font-weight: bold;
 }
 
 
@@ -255,7 +257,7 @@ export default {
         deployedAddress
       );
       let startBet = await myContract.methods
-        .startBet(30)
+        .startBet(999999)
         .send({
           from: process.env.VUE_APP_ETHADDRESS
         })
