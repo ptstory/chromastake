@@ -44,8 +44,6 @@
           <swatches v-model="colorSelected" :colors="colors" row-length="5"></swatches>
           <span>{{ toColorName(colorSelected) }}</span>
           <br>
-          <span v-if="isWinner">YOU ROCK</span>
-          <span v-if="isLoser">YOU SUCK</span>
           <br>
           <span>{{ this.selectedColors }}</span>
         </b-col>
