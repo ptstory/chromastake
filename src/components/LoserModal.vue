@@ -2,7 +2,7 @@
   <div>
     <!-- <b-button @click="isLoser=true" variant="">Show Modal</b-button> -->
     <!--Losing Modal  -->
-    <b-modal centered v-model="show=true" title="Sorry!">
+    <b-modal centered v-model="show" title="Sorry!">
       <b-container fluid>
         <b-row>
           <b-col class="headliner">
@@ -27,7 +27,7 @@
   export default {
     data() {
       return {
-        show: false,
+        show: true,
         isLoser:false
 
 
