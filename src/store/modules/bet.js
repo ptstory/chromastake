@@ -1,6 +1,7 @@
 const state = {
   value: "",
   color: "",
+  selectedColors: [],
   isRunning: false,
   timeLeft: 0
 };
@@ -11,6 +12,9 @@ const getters = {
   },
   getTimeLeft: state => {
     return state.timeLeft;
+  },
+  getSelectedColors: state => {
+    return state.selectedColors;
   }
 };
 
@@ -34,6 +38,9 @@ const mutations = {
   },
   setIsRunning(state, isRunning) {
     state.isRunning = isRunning;
+  },
+  addSelectedColor(state, color) {
+    state.selectedColors.push(color)
   }
 };
 
