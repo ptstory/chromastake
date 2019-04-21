@@ -300,9 +300,10 @@ export default {
   },
   watch: {
     timeLeft(time) {
-      if (time <= 0 && this.$store.state.bet.isRunning) {
+      if (time <= 0 && this.$store.state.bet.isRunning && !this.$store.state.bet.hasEnded) {
         this.$store.commit("bet/setIsRunning", false);
         this.endBet()
+        this.$store.commit("bet/setHasEnded", true);
       }
     }
   },

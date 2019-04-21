@@ -3,6 +3,7 @@ const state = {
   color: "",
   selectedColors: [],
   isRunning: false,
+  hasEnded: false,
   timeLeft: 0
 };
 
@@ -38,6 +39,9 @@ const mutations = {
   },
   setIsRunning(state, isRunning) {
     state.isRunning = isRunning;
+  },
+  setHasEnded(state, hasEnded) {
+    state.hasEnded = hasEnded;
   },
   addSelectedColor(state, color) {
     state.selectedColors.push(color)
