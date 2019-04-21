@@ -14,7 +14,7 @@
       <b-row>
         <b-col cols ="6"><span style="font-weight:bold;">Balance: </span>{{ formatPrice(ethBalance) }}</b-col>
         <b-col cols ="2"></b-col>
-        <b-col cols ="4">   
+        <b-col cols ="4">
           <countdown v-if="timeLeft >= 0" :time="timeLeft">
       <template slot-scope="props">
         Time Remaining: {{ props.minutes }} minutes, {{ props.seconds }} seconds.
@@ -50,6 +50,8 @@
         <b-col><b-button @click="makeBet">Make Bet</b-button></b-col>
       </b-row>
     </b-container>
+    <WinnerModal/>
+    <LoserModal/>
   </b-container>
 
   <b-container fluid v-else>
@@ -59,6 +61,11 @@
       <b-col></b-col>
     </b-row>
   </b-container>
+
+  <!-- Winner & Losers Modal -->
+
+
+
 
 
 </template>
@@ -107,6 +114,8 @@ import Web3 from "web3";
 import { mapGetters } from "vuex";
 import Swatches from 'vue-swatches';
 import Spinner from '@/components/Spinner';
+import WinnerModal from '@/components/WinnerModal';
+import LoserModal from '@/components/LoserModal';
 
 
 import Betting from "@/../build/contracts/Betting.json";
@@ -115,7 +124,9 @@ import "vue-swatches/dist/vue-swatches.min.css";
 export default {
   components: {
     Swatches,
-    Spinner
+    Spinner,
+    WinnerModal,
+    LoserModal
 
    },
   data() {
