@@ -4,7 +4,7 @@
     <!-- <b-button @click="isWinner=true" variant="">Show Modal</b-button> -->
 
     <!--Winning Modal  -->
-    <b-modal centered v-model="show=true" title="Congratulations!">
+    <b-modal centered v-model="show" title="Congratulations!">
       <b-container fluid>
         <b-row>
           <b-col class="headliner">
@@ -35,7 +35,7 @@
   export default {
     data() {
       return {
-        show: false,
+        show: true,
         isWinner:false
 
       }

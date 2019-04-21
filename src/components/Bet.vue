@@ -50,8 +50,8 @@
         <b-col><b-button @click="makeBet">Make Bet</b-button></b-col>
       </b-row>
     </b-container>
-    <WinnerModal/>
-    <LoserModal/>
+    <WinnerModal v-if="isWinner" />
+    <LoserModal v-if="isLoser" />
   </b-container>
 
   <b-container fluid v-else>
