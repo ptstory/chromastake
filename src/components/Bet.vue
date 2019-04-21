@@ -4,11 +4,10 @@
 
     <b-container class="info">
       <b-row>
-        <b-col cols ="6" class="account"><span style="font-weight:bold;">Account: </span>{{ethAddress }}</b-col>
-        <!--Vuex store: {{ this.$store.state.bet.color }}-->
+        <b-col cols ="6" class="account"><span style="font-weight:bold;">Account: </span>{{ ethAddress }}</b-col>
         <b-col cols="2"></b-col>
         <b-col cols ="4">
-          <span placeholder="Pool Amount"> <span class ="pool">Pool Amount: </span> {{fromEther(poolAmount)}} </span>
+          <span placeholder="Pool Amount"> <span class ="pool">Pool Amount: </span> {{ fromEther(poolAmount) }} </span>
         </b-col>
       </b-row>
 
@@ -41,8 +40,10 @@
       <b-row>
         <b-col style ="padding-bottom:20px;">
           <span style="color:black;font-weight:bold;">Select color:</span>
-          <swatches v-model="color" :colors="colors" row-length="5"></swatches>
-          <span>{{color}}</span>
+          <swatches v-model="colorSelected" :colors="colors" row-length="5"></swatches>
+          <span>{{ toColorName(colorSelected) }}</span>
+          <br>
+          <span>{{ this.selectedColors }}</span>
         </b-col>
       </b-row>
       <b-row>
@@ -73,17 +74,6 @@
   height:100%;
 }
 
-  /* width:100vw;
-  height:94vh; */
-  
-  /* background-color:#37775c; */
-
-
-/* @media (max-width: 425px){
-  .running_page{
-    margin-top:40%;
-}
-} */
 .spinner{
   background-color:red;
   width:300px;
@@ -130,11 +120,10 @@ export default {
    },
   data() {
     return {
-      color: '',
       colors: [
-        ['#f7931e', '#2e3192', '#22b573', '#c1272d', '#662d91', '#56c6d0' ],
+        ['#c1272d', '#2e3192', '#22b573', '#f6db2f', '#662d91', '#f7931e'], // red, blue, green, yellow, purple, orange
       ],
-      colorSelected: "",
+      colorSelected: '',
       betValue: 0,
       poolAmount: 0,
       hasPlayed: false,
@@ -145,7 +134,8 @@ export default {
     web3Instance: "getWeb3Instance",
     ethBalance: "getEthBalance",
     ethAddress: "getEthAddress",
-    timeLeft: "bet/getTimeLeft"
+    timeLeft: "bet/getTimeLeft",
+    selectedColors: "bet/getSelectedColors"
   }),
   betValue() {
     return this.$store.state.bet.value;
@@ -155,6 +145,9 @@ export default {
   },
   isRunning() {
     return this.$store.state.bet.isRunning;
+  },
+  selectedColors() {
+    return this.$store.state.bet.selectedColors;
   },
   methods: {
     initWeb3: () => {
@@ -186,15 +179,13 @@ export default {
         deployedAddress
       );
       let makeBet = await myContract.methods
-        .makeBet(this.colorSelected)
+        .makeBet(this.toEnum(this.colorSelected)) // toEnum() returns the corresponding enum for the color code
         .send({
           value: this.toEther(this.betValue),
           from: process.env.VUE_APP_ETHADDRESS
         })
-        .once("receipt", function(receipt) {})
-        // .on('confirmation', function(confNumber, receipt){ confNumber => this.$store.commit("bet/setColor", this.colorSelected) })
-        // .then(this.$store.commit("bet/setColor", this.colorSelected))
-        .catch(error => alert(error.message));
+        .once("transactionHash", (hash) => { this.$store.commit("bet/addSelectedColor", this.colorSelected) }) // wait for the transaction hash (confirmation) before adding selected color to user's state
+        .catch(error => alert(error.message))
     },
     async getIsRunning() {
       web3 = new Web3(web3.currentProvider);
@@ -204,9 +195,7 @@ export default {
         deployedAddress
       );
       let getIsRunning = await myContract.methods.getIsRunning().call();
-      // this.running = getIsRunning;
       this.$store.commit("bet/setIsRunning", getIsRunning);
-      // console.log("Is running? " + this.running)
     },
     async getEndTime() {
       web3 = new Web3(web3.currentProvider);
@@ -244,10 +233,6 @@ export default {
         .send({
           from: process.env.VUE_APP_ETHADDRESS
         })
-        .once("transactionHash", function(hash) {})
-        .once("receipt", function(receipt) {})
-        // .on('confirmation', function(confNumber, receipt){ this.$store.commit("bet/setIsRunning", true) })
-        // .on('confirmation', function(confNumber, receipt){ receipt => this.getEndTime() })
         .catch(error => alert(error.message));
     },
     async endBet() {
@@ -262,8 +247,6 @@ export default {
         .send({
           from: process.env.VUE_APP_ETHADDRESS
         })
-        // .then(this.$store.commit("bet/setValue", this.contractValue))
-        // .then(this.running = this.getRunning())
         .catch(error => alert(error.message));
     },
     formatPrice(value) {
@@ -276,13 +259,21 @@ export default {
     },
     fromEther(value) {
       return value / 1000000000000000000;
+    },
+    toEnum(color){ //takes in color code from the swatch component and returns an enum the contract can understand
+      const m = new Map([['#c1272d', 0], ['#2e3192', 1], ['#22b573', 2], ['#f6db2f', 3], ['#662d91', 4], ['#f7931e', 5]])
+      return m.get(color)
+    },
+    toColorName(code){ //takes in color code from the swatch component and returns a color name the user will recognize
+      const m = new Map([['#c1272d', 'red'], ['#2e3192', 'blue'], ['#22b573', 'green'], ['#f6db2f', 'yellow'], ['#662d91', 'purple'], ['#f7931e', 'orange']])
+      return m.get(code)
     }
   },
   watch: {
     timeLeft(time) {
       if (time <= 0 && this.$store.state.bet.isRunning) {
         this.$store.commit("bet/setIsRunning", false);
-        this.endBet();
+        this.endBet()
       }
     }
   },
