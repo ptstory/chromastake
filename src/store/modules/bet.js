@@ -4,7 +4,8 @@ const state = {
   selectedColors: [],
   isRunning: false,
   hasEnded: false,
-  timeLeft: 0
+  poolAmount: 0,
+  timeLeft: 0,
 };
 
 const getters = {
@@ -36,6 +37,9 @@ const mutations = {
   },
   setTimeLeft(state, timeLeft) {
     state.timeLeft = timeLeft;
+  },
+  setPoolAmount(state, poolAmount) {
+    state.poolAmount = poolAmount;
   },
   setIsRunning(state, isRunning) {
     state.isRunning = isRunning;

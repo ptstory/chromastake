@@ -7,7 +7,7 @@
         <b-col cols ="6" class="account"><span style="font-weight:bold;">Account: </span>{{ ethAddress }}</b-col>
         <b-col cols="2"></b-col>
         <b-col cols ="4">
-          <span> <span class ="pool">Pool Amount: </span> {{ fromEther(poolAmount) }} </span>
+          <span> <span class ="pool">Pool Amount: </span> {{ fromEther(this.$store.state.bet.poolAmount) }} </span>
           <span> <span class ="pool">Winning Color </span> {{ winningColor }} </span>
         </b-col>
       </b-row>
@@ -49,7 +49,7 @@
         </b-col>
       </b-row>
       <b-row>
-        <b-col><b-button @click="makeBet">Make Bet</b-button></b-col>
+        <b-col><b-button :disabled="betValue < 1 || colorSelected == ''" @click="makeBet">Make Bet</b-button></b-col>
       </b-row>
     </b-container>
     <WinnerModal v-if="isWinner" />
@@ -138,7 +138,7 @@ export default {
       ],
       colorSelected: '',
       betValue: 0,
-      poolAmount: 0,
+      // poolAmount: 0,
       winningColor: '',
       hasPlayed: false,
       isWinner: false,
@@ -235,7 +235,8 @@ export default {
         deployedAddress
       );
       let getPoolAmount = await myContract.methods.getPoolAmount().call();
-      this.poolAmount = getPoolAmount;
+      this.$store.commit("bet/setPoolAmount", getPoolAmount);
+      // this.poolAmount = getPoolAmount;
     },
     async getWinningColor() {
       web3 = new Web3(web3.currentProvider);
@@ -311,8 +312,6 @@ export default {
     this.$nextTick(function() {
       window.setInterval(() => {
         this.getIsRunning();
-      }, 4000);
-      window.setInterval(() => {
         this.getEndTime();
         this.getPoolAmount();
         this.getWinningColor();

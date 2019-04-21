@@ -1,6 +1,5 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Home from "./views/Home.vue";
 import About from "./views/About.vue";
 import Betting from "./views/Betting.vue";
 
@@ -10,18 +9,13 @@ export default new Router({
   routes: [
     {
       path: "/",
-      name: "home",
-      component: Home
+      name: "betting",
+      component: Betting
     },
     {
       path: "/about",
       name: "about",
       component: About
-    },
-    {
-      path: "/betting",
-      name: "betting",
-      component: Betting
     }
   ]
 });

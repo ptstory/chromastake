@@ -10,9 +10,12 @@
           <b-col class="headliner">
             You Won!
             <br/>
+            Here's your new balance:
+            <br/>
             <span class ="money">
-              {pool amount}
+              {{ fromEther(ethBalance) }}
             </span>
+            <span> Ether </span>
           </b-col>
         </b-row>
       </b-container>
@@ -32,6 +35,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
   export default {
     data() {
       return {
@@ -39,7 +44,16 @@
         isWinner:false
 
       }
-    }
+    },
+    computed: mapGetters({
+    web3Instance: "getWeb3Instance",
+    ethBalance: "getEthBalance",
+  }),
+  methods: {
+    fromEther(value) {
+      return value / 1000000000000000000;
+    },
+  }
   }
 </script>
 <style>
