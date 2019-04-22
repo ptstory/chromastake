@@ -57,6 +57,9 @@
     <!-- Winner & Losers Modal -->
     <WinnerModal v-if="isWinner" />
     <LoserModal v-if="isLoser" />
+    <b-alert v-model="insufficientFunds" variant="danger" dismissible>
+      You don't have that much to bet!
+    </b-alert>
   </b-container>
 
   <b-container fluid v-else>
@@ -142,6 +145,7 @@ export default {
       colorSelected: '',
       betValue: 0,
       winningColor: '',
+      insufficientFunds: false,
       hasPlayed: false,
       isWinner: false,
       isLoser: false,
@@ -190,6 +194,8 @@ export default {
       web3.eth.getAccounts().then(console.log);
     },
     async makeBet() {
+      if (this.toEther(this.betValue) >= this.ethBalance) { this.insufficientFunds = true};
+      if(this.insufficientFunds) { return };
       web3 = new Web3(web3.currentProvider);
       let deployedAddress = await this.getContractAddress();
       let myContract = new web3.eth.Contract(
