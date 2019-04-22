@@ -206,7 +206,8 @@ export default {
         .makeBet(this.toEnum(this.colorSelected)) // toEnum() returns the corresponding enum for the color code
         .send({
           value: this.toEther(this.betValue),
-          from: process.env.VUE_APP_ETHADDRESS
+          // from: process.env.VUE_APP_ETHADDRESS
+          from: this.ethAddress
         })
         .once("transactionHash", (hash) => { this.$store.commit("bet/addSelectedColor", this.toEnum(this.colorSelected)) }) // wait for the transaction hash (confirmation) before adding selected color to user's state
         .catch(error => alert(error.message))
@@ -264,9 +265,10 @@ export default {
         deployedAddress
       );
       let startBet = await myContract.methods
-        .startBet(30)
+        .startBet(75)
         .send({
-          from: process.env.VUE_APP_ETHADDRESS
+          // from: process.env.VUE_APP_ETHADDRESS
+          from: this.ethAddress
         })
         .catch(error => alert(error.message));
     },
@@ -280,7 +282,8 @@ export default {
       let endBet = await myContract.methods
         .endBet()
         .send({
-          from: process.env.VUE_APP_ETHADDRESS
+          // from: process.env.VUE_APP_ETHADDRESS
+          from: this.ethAddress
         })
       .then(this.announceWinner())
     },
