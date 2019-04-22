@@ -46,7 +46,8 @@
           <span>{{ toColorName(colorSelected) }}</span>
           <br>
           <br>
-          <span>{{ this.selectedColors }}</span>
+          <!-- used for debugging -->
+          <!-- <span>{{ this.selectedColors }}</span> -->
         </b-col>
       </b-row>
       <b-row>
@@ -140,7 +141,6 @@ export default {
       ],
       colorSelected: '',
       betValue: 0,
-      // poolAmount: 0,
       winningColor: '',
       hasPlayed: false,
       isWinner: false,
@@ -258,7 +258,7 @@ export default {
         deployedAddress
       );
       let startBet = await myContract.methods
-        .startBet(999999)
+        .startBet(30)
         .send({
           from: process.env.VUE_APP_ETHADDRESS
         })

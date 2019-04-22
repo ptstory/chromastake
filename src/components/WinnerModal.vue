@@ -22,9 +22,9 @@
       <!-- Overrides the orginal footer -->
       <div slot="modal-footer" class="w-100">
         <!--add startBet() function  -->
-        <b-button size="sm" class="float-right" @click="show=false;">
+        <!-- <b-button size="sm" class="float-right" @click="show=false; this.$router.go(0);">
           Play Again!
-        </b-button>
+        </b-button> -->
       </div>
 
 
