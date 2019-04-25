@@ -17,6 +17,7 @@ import Web3 from "web3";
 import { mapGetters } from "vuex";
 
 import MyContract from "@/../build/contracts/MyContract.json";
+// import MyContract from "/Users/perrystory/chromastake_js/build/contracts/MyContract.json"
 
 export default {
   data() {
@@ -51,6 +52,7 @@ export default {
     async getContractAddress() {
       web3 = new Web3(web3.currentProvider);
       let networkID = await web3.eth.net.getId();
+      // let networkID = 5777 //hard code this for now as getId() isn't working
       let deployedAddress = this.contractJson.networks[networkID].address;
       return deployedAddress;
     },
