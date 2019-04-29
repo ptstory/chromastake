@@ -206,8 +206,8 @@ export default {
         .makeBet(this.toEnum(this.colorSelected)) // toEnum() returns the corresponding enum for the color code
         .send({
           value: this.toEther(this.betValue),
-          // from: process.env.VUE_APP_ETHADDRESS
-          from: this.ethAddress
+          // from: process.env.VUE_APP_ETHADDRESS // account address stored in env variable
+          from: this.ethAddress                   // account address fetched by web3
         })
         .once("transactionHash", (hash) => { this.$store.commit("bet/addSelectedColor", this.toEnum(this.colorSelected)) }) // wait for the transaction hash (confirmation) before adding selected color to user's state
         .catch(error => alert(error.message))
