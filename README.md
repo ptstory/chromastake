@@ -4,7 +4,7 @@ Chromastake is a decentralized application that allows users to bet on a randoml
 
 ### Prerequisites
 
-- You will need `NodeJS` v8.9.4 or later. `NodeJS` and installation instructions can be found for all major operating systems at: `https://nodejs.org/en/download/`.
+- You will need `NodeJS` v8.9.4 or later. `NodeJS` and installation instructions can be found for all major operating systems at: https://nodejs.org/en/download/.
 
 - You will need `truffle` installed globally. If you haven't done so: 
 
@@ -24,9 +24,9 @@ Truffle v5.0.7 (core: 5.0.7)
 Solidity v0.5.0 (solc-js)
 ```
 
-- You will need the Chrome extension `MetaMask` to handle your Ethereum wallet. It can be found at: `https://metamask.io/`.
+- You will need the Chrome extension `MetaMask` to handle your Ethereum wallet. It can be found at: https://metamask.io/.
 
-- You will need `Ganache` to have access to a local blockchain for testing. It can be found at: `https://truffleframework.com/ganache`.
+- You will need `Ganache` to have access to a local blockchain for testing. It can be found at: https://truffleframework.com/ganache.
 
 ### Installing
 
