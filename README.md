@@ -57,6 +57,7 @@ Solidity v0.5.0 (solc-js)
 1. Launch Ganache - this will start up a local blockchain for you to point MetaMask to.
 2. Run `truffle migrate --reset` to compile the contracts and replace the JSON build files.
 3. [OPTIONAL] If you intend to store your account address as an environment variable for security, replace the env variable in the .env file with the account address printed by Truffle in your terminal. Otherwise, you must rely on web3 to fetch your account address.
+
 ![Image of account address fetched by web3](images/web3_fetch.png?raw=true)
 
 ![Image of account address printed by Truffle](images/account_address.png?raw=true)
