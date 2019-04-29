@@ -1,9 +1,9 @@
 <template>
   <b-container align-v="center">
     <p>
-      <br />
       <br/>
-      </br/>
+      <br/>
+      <br/>
       <span class = "title">Chromastake!</span>
       <br/>
 
@@ -14,13 +14,13 @@
       Fair: Winning color is calculated within an impartial, open source smart contract instead of through a 3rd party, hidden API
       <br />
       Light: No database needed in addition to ethereum
-      <br />
+      <br/>
       <br/>
       <br/>
 
-      </br/>
-      </br/>
-      STEPS:<br />
+      <br/>
+      <br/>
+      STEPS:<br/>
       1. Connect chromastake_js with metamask<br />
       2. Press Play<br />
       3. Pay some gas to start the session!<br />

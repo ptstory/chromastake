@@ -13,7 +13,7 @@
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.16",
     "dotenv": "^6.2.0",
-    "truffle": "^5.0.0",
+    "truffle": "^5.0.14",
     "truffle-contract": "^4.0.0",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",
