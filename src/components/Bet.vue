@@ -17,6 +17,7 @@
         <b-col cols ="2"></b-col>
         <!--Timer  -->
         <b-col cols ="4">
+          <!-- The countdown timer is only rendered when timeLeft >= 0, and is given timeLeft as a prop -->
           <countdown v-if="timeLeft >= 0" :time="timeLeft">
       <template slot-scope="props" >
         <span class ="timer"> {{ props.minutes }} minutes, {{ props.seconds }} seconds.</span>
@@ -51,12 +52,14 @@
         </b-col>
       </b-row>
       <b-row>
+        <!-- The :disabled prop is used for form validation, the button is not clickable until certain conditions are met. -->
         <b-col><b-button :disabled="betValue < 1 || colorSelected == ''" @click="makeBet">Make Bet</b-button></b-col>
       </b-row>
     </b-container>
     <!-- Winner & Losers Modal -->
     <WinnerModal v-if="isWinner" />
     <LoserModal v-if="isLoser" />
+    <!-- If a user tries to bet more than their balance, this alert pops up and the makeBet() method is not called in the contract. -->
     <b-alert v-model="insufficientFunds" variant="danger" dismissible>
       You don't have that much to bet!
     </b-alert>
@@ -142,6 +145,7 @@ export default {
       colors: [
         ['#c1272d', '#2e3192', '#22b573', '#f6db2f', '#662d91', '#f7931e'], // red, blue, green, yellow, purple, orange
       ],
+      // the following initial values are modified by the Vuex store as well as the forms above
       colorSelected: '',
       betValue: 0,
       winningColor: '',
@@ -152,6 +156,7 @@ export default {
       contractJson: Betting,
     };
   },
+  // syntactic sugar for getting values from the Vuex store modules
   computed: mapGetters({
     web3Instance: "getWeb3Instance",
     ethBalance: "getEthBalance",
@@ -172,6 +177,7 @@ export default {
     return this.$store.state.bet.selectedColors;
   },
   methods: {
+    // required for the handshake between MetaMask and the app
     initWeb3: () => {
       if (window.ethereum) {
         window.web3 = new Web3(ethereum);
@@ -182,20 +188,22 @@ export default {
         }
       }
     },
+    // Every time the contract is recompiled by truffle migrate --reset, the JSON in the build folder is replaced
+    // therefore we need a method to fetch the current contract address
     async getContractAddress() {
       web3 = new Web3(web3.currentProvider);
       let networkID = await web3.eth.net.getId();
-      // let networkID = 5777 //hard code this for now as getId() isn't working
       let deployedAddress = this.contractJson.networks[networkID].address;
       return deployedAddress;
     },
+    // used for debugging to make sure we always have access to the correct account address
     async getAccount() {
       web3 = new Web3(web3.currentProvider);
       web3.eth.getAccounts().then(console.log);
     },
     async makeBet() {
       if (this.toEther(this.betValue) >= this.ethBalance) { this.insufficientFunds = true};
-      if(this.insufficientFunds) { return };
+      if(this.insufficientFunds) { return }; // without this, the contract will still reject the tx
       web3 = new Web3(web3.currentProvider);
       let deployedAddress = await this.getContractAddress();
       let myContract = new web3.eth.Contract(
@@ -209,9 +217,11 @@ export default {
           // from: process.env.VUE_APP_ETHADDRESS // account address stored in env variable
           from: this.ethAddress                   // account address fetched by web3
         })
-        .once("transactionHash", (hash) => { this.$store.commit("bet/addSelectedColor", this.toEnum(this.colorSelected)) }) // wait for the transaction hash (confirmation) before adding selected color to user's state
+        // wait for the transaction hash (confirmation) before adding selected color to user's state
+        .once("transactionHash", (hash) => { this.$store.commit("bet/addSelectedColor", this.toEnum(this.colorSelected)) })
         .catch(error => alert(error.message))
     },
+    // standard getters acting as bridge between the contract, Vuex store, and Bet component
     async getIsRunning() {
       web3 = new Web3(web3.currentProvider);
       let deployedAddress = await this.getContractAddress();
@@ -245,7 +255,6 @@ export default {
       );
       let getPoolAmount = await myContract.methods.getPoolAmount().call();
       this.$store.commit("bet/setPoolAmount", getPoolAmount);
-      // this.poolAmount = getPoolAmount;
     },
     async getWinningColor() {
       web3 = new Web3(web3.currentProvider);
@@ -272,6 +281,7 @@ export default {
         })
         .catch(error => alert(error.message));
     },
+    // this is called when time runs out, announceWinner() is chained at the end
     async endBet() {
       web3 = new Web3(web3.currentProvider);
       let deployedAddress = await this.getContractAddress();
@@ -311,6 +321,7 @@ export default {
     }
   },
   watch: {
+    // watchers in Vue let us watch a value (timeLeft) and every time it changes, run a block of code
     timeLeft(time) {
       if (time <= 0 && this.$store.state.bet.isRunning && !this.$store.state.bet.hasEnded) {
         this.$store.commit("bet/setIsRunning", false);
@@ -320,6 +331,8 @@ export default {
     }
   },
   mounted: function() {
+    // we dont have cool libs like Drizzle so we have to do things the hacky way: run these getter methods 
+    // every second to keep our component state in sync with the contract
     this.$nextTick(function() {
       window.setInterval(() => {
         this.getIsRunning();
@@ -330,6 +343,7 @@ export default {
     });
   },
   created: function() {
+    //grab some initial values when the component is created
     window.addEventListener("load", () => {
       setTimeout(() => {
         this.$store.dispatch("fetchWeb3Instance");
@@ -342,5 +356,3 @@ export default {
   }
 };
 </script>
-
-<style scoped lang="scss"></style>
